@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Главная страница</title>
+</head>
+<body>
+
+<h1>Добро пожаловать!</h1>
+
+<div>
+    <p>Выберите действие:</p>
+    <div>
+        <a th:href="@{/login}" style="margin-right: 20px;">Войти</a>
+        <a th:href="@{/registration}">Зарегистрироваться</a>
+    </div>
+</div>
+
+</body>
+</html>

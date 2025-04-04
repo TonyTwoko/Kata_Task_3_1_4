@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Редактировать пользователя</title>
+</head>
+<body>
+<h1>Редактировать пользователя</h1>
+
+<form th:action="@{/admin/edit/{id}(id=${user.id})}" th:object="${user}" method="post">
+  <div>
+    <label>Username:</label>
+    <input type="text" th:field="*{username}"/>
+    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+  </div>
+
+  <div>
+    <label>Surname:</label>
+    <input type="text" th:field="*{surname}"/>
+    <span th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></span>
+  </div>
+
+  <div>
+    <label>Password:</label>
+    <input type="password" th:field="*{password}" placeholder="Введите старый или новый пароль"/>
+    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+  </div>
+
+  <div>
+    <label>Roles:</label>
+    <div th:each="role : ${allRoles}">
+      <input type="checkbox"
+             th:value="${role.id}"
+             name="selectedRoles"
+             th:checked="${user.roles != null && user.roles.contains(role)}"/>
+      <label th:text="${role.name}"></label>
+    </div>
+  </div>
+
+  <div>
+    <button type="submit">Обновить</button>
+    <a th:href="@{/admin}">Отмена</a>
+  </div>
+</form>
+
+</body>
+</html>
