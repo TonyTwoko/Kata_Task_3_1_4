@@ -2,47 +2,59 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Create User</title>
+  <title>Create</title>
   <style>
-    .error { color: red; }
-    .role-container { margin-bottom: 15px; }
+    .error { color: red; font-size: 0.9em; }
+    .error-field { border: 1px solid red; }
+    .role-error { margin-top: 5px; }
   </style>
 </head>
 <body>
 
 <h1>Создание нового пользователя</h1>
 
-
 <div th:if="${error}" class="error" th:text="${error}"></div>
 
-<form th:action="@{/admin/new}" method="post">
+<form th:action="@{/admin/new}" th:object="${user}" method="post">
+
   <div>
     <label>Username:</label>
-    <input type="text" name="username" th:value="${user?.username}" required>
+    <input type="text" th:field="*{username}"
+           th:classappend="${#fields.hasErrors('username')} ? 'error-field'">
+    <span th:if="${#fields.hasErrors('username')}"
+          th:errors="*{username}"
+          class="error"></span>
   </div>
 
   <div>
     <label>Surname:</label>
-    <input type="text" name="surname" th:value="${user?.surname}" required>
+    <input type="text" th:field="*{surname}"
+           th:classappend="${#fields.hasErrors('surname')} ? 'error-field'">
+    <span th:if="${#fields.hasErrors('surname')}"
+          th:errors="*{surname}"
+          class="error"></span>
   </div>
 
   <div>
     <label>Password:</label>
-    <input type="password" name="password" required>
+    <input type="password" th:field="*{password}"
+           th:classappend="${#fields.hasErrors('password')} ? 'error-field'">
+    <span th:if="${#fields.hasErrors('password')}"
+          th:errors="*{password}"
+          class="error"></span>
   </div>
 
-
-  <div class="role-container" th:classappend="${roleError != null} ? 'error'">
+  <div>
     <label>Roles:</label>
     <div th:each="role : ${allRoles}">
       <input type="checkbox"
              th:value="${role.id}"
              name="roleIds"
-             th:checked="${user?.roles != null and #lists.contains(user.roles, role)}">
+             th:checked="${user.roles != null && #lists.contains(user.roles, role)}">
       <label th:text="${role.name}"></label>
     </div>
 
-    <span th:if="${roleError}" class="error" th:text="${roleError}"></span>
+    <span th:if="${roleError}" class="error role-error" th:text="${roleError}"></span>
   </div>
 
   <div>

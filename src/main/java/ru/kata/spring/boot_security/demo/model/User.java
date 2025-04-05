@@ -29,7 +29,7 @@ public class User implements UserDetails {
     private String surname;
 
     @NotNull(message = "Обязательное поле")
-    @Size(min = 4, message = "Пароль должен содержать не менее 6 символов")
+    @Size(min = 4, message = "Пароль должен содержать не менее 4 символов")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)

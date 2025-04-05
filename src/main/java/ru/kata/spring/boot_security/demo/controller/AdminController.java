@@ -2,11 +2,13 @@ package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import javax.validation.Valid;
 import java.util.Set;
 
 @Controller
@@ -36,23 +38,25 @@ public class AdminController {
     }
 
     @PostMapping("/new")
-    public String createUser(@ModelAttribute User user,
+    public String createUser(@Valid @ModelAttribute("user") User user,
+                             BindingResult bindingResult,
                              @RequestParam(required = false) Set<Long> roleIds,
                              Model model) {
-
         if (roleIds == null || roleIds.isEmpty()) {
-            model.addAttribute("error", "выберите хотя бы одну роль");
-            model.addAttribute("user", user);
+            model.addAttribute("roleError", "Выберете минимум 1 роль");
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "new";
         }
-
-        if (!userService.saveUser(user, roleIds)) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("allRoles", roleService.getAllRoles());
+            return "new";
+        }
+        if (userService.existsByUsername(user.getUsername())) {
             model.addAttribute("error", "Имя пользователя уже существует");
-            model.addAttribute("user", user);
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "new";
         }
+        userService.saveUser(user, roleIds);
         return "redirect:/admin";
     }
 
@@ -66,13 +70,18 @@ public class AdminController {
 
     @PostMapping("/edit/{id}")
     public String updateUser(@PathVariable Long id,
-                             @ModelAttribute User user,
-                             @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
+                             @Valid @ModelAttribute("user") User user,
+                             BindingResult bindingResult,
+                             @RequestParam(required = false) Set<Long> roleIds,
                              Model model) {
 
         if (roleIds == null || roleIds.isEmpty()) {
-            model.addAttribute("error", "User must have at least one role");
-            model.addAttribute("user", user);
+            model.addAttribute("roleError", "Please select at least one role");
+            model.addAttribute("allRoles", roleService.getAllRoles());
+            return "edit";
+        }
+
+        if (bindingResult.hasErrors()) {
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "edit";
         }
