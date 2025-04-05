@@ -1,17 +1,12 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
-import javax.validation.Valid;
-import java.util.HashSet;
 import java.util.Set;
 
 @Controller
@@ -19,80 +14,75 @@ import java.util.Set;
 public class AdminController {
 
     private final UserService userService;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
-    @Autowired
-    public AdminController(UserService userService, RoleRepository roleRepository) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
     }
 
     @GetMapping
-    public String adminPage(Model model) {
+    public String adminPanel(Model model) {
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "admin";
     }
 
     @GetMapping("/new")
-    public String createUserForm(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
-        model.addAttribute("allRoles", roleRepository.findAll()); // Получаем все роли из БД
+    public String showCreateForm(Model model) {
+        model.addAttribute("user", new User());
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "new";
     }
 
     @PostMapping("/new")
-    public String createUser(@ModelAttribute("user") @Valid User user,
-                             BindingResult bindingResult,
-                             @RequestParam("selectedRoles") Set<Long> selectedRoleIds, Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("allRoles", roleRepository.findAll());
+    public String createUser(@ModelAttribute User user,
+                             @RequestParam(required = false) Set<Long> roleIds,
+                             Model model) {
+
+        if (roleIds == null || roleIds.isEmpty()) {
+            model.addAttribute("error", "выберите хотя бы одну роль");
+            model.addAttribute("user", user);
+            model.addAttribute("allRoles", roleService.getAllRoles());
             return "new";
         }
 
-        Set<Role> selectedRoles = new HashSet<>(roleRepository.findAllById(selectedRoleIds));
-        if (selectedRoles.isEmpty()) {
-            bindingResult.rejectValue("roles", "error.user"
-                    , "Select at least one role");
-            model.addAttribute("allRoles", roleRepository.findAll());
+        if (!userService.saveUser(user, roleIds)) {
+            model.addAttribute("error", "Имя пользователя уже существует");
+            model.addAttribute("user", user);
+            model.addAttribute("allRoles", roleService.getAllRoles());
             return "new";
         }
-        user.setRoles(selectedRoles);
-        userService.saveUser(user);
         return "redirect:/admin";
     }
 
     @GetMapping("/edit/{id}")
-    public String editUserForm(@PathVariable("id") Long id, Model model) {
+    public String showEditForm(@PathVariable Long id, Model model) {
         User user = userService.getUserById(id);
         model.addAttribute("user", user);
-        model.addAttribute("allRoles", roleRepository.findAll());
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "edit";
     }
 
     @PostMapping("/edit/{id}")
-    public String updateUser(@PathVariable("id") Long id,
-                             @ModelAttribute("user") @Valid User user,
-                             BindingResult bindingResult,
-                             @RequestParam("selectedRoles") Set<Long> selectedRoleIds, Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("allRoles", roleRepository.findAll());
+    public String updateUser(@PathVariable Long id,
+                             @ModelAttribute User user,
+                             @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
+                             Model model) {
+
+        if (roleIds == null || roleIds.isEmpty()) {
+            model.addAttribute("error", "User must have at least one role");
+            model.addAttribute("user", user);
+            model.addAttribute("allRoles", roleService.getAllRoles());
             return "edit";
         }
-        Set<Role> selectedRoles = new HashSet<>(roleRepository.findAllById(selectedRoleIds));
-        if (selectedRoles.isEmpty()) {
-            bindingResult.rejectValue("roles", "error.user"
-                    , "Select at least one role");
-            model.addAttribute("allRoles", roleRepository.findAll());
-            return "edit";
-        }
-        user.setRoles(selectedRoles);
-        userService.updateUser(id, user);
+
+        userService.updateUser(id, user, roleIds);
         return "redirect:/admin";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id) {
+    @PostMapping("/delete/{id}")
+    public String deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return "redirect:/admin";
     }

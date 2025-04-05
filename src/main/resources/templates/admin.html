@@ -2,47 +2,52 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Админка</title>
+    <title>Admin</title>
 </head>
 <body>
-<h1>Администратор</h1>
 
-<div th:if="${users != null and !users.isEmpty()}">
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Surname</th>
-            <th>Roles</th>
-            <th>Actions</th>
-        </tr>
-        <tr th:each="user : ${users}">
-            <td th:text="${user.id}"></td>
-            <td th:text="${user.username}"></td>
-            <td th:text="${user.surname}"></td>
-            <td>
-                <span th:each="role, iterStat : ${user.roles}"
-                      th:text="${role.name} + (${iterStat.last} ? '' : ', ')">
+<h1>Админка</h1>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Surname</th>
+        <th>Roles</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.username}"></td>
+        <td th:text="${user.surname}"></td>
+        <td>
+                <span th:each="role, iterStat : ${user.roles}">
+                    <span th:text="${role.name}"></span>
+                    <span th:unless="${iterStat.last}">, </span>
                 </span>
-            </td>
-            <td>
-                <a th:href="@{/admin/edit/{id}(id=${user.id})}">Изменить</a>
-                <a th:href="@{/admin/delete/{id}(id=${user.id})}">Удалить</a>
-            </td>
-        </tr>
-    </table>
-</div>
+        </td>
+        <td>
+            <a th:href="@{/admin/edit/{id}(id=${user.id})}">Изменить</a>
+            <form th:action="@{/admin/delete/{id}(id=${user.id})}" method="post" style="display: inline;">
+                <button type="submit">Удалить</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
 
-<div th:if="${users == null or users.isEmpty()}">
-    <p>Нет пользователей для отображения</p>
-</div>
+<br>
+<a th:href="@{/admin/new}">Создать нового пользователя</a>
 
-<div>
-    <a th:href="@{/admin/new}">Создать нового пользователя</a>
-</div>
+<br>
+<br>
+<br>
 
 <form th:action="@{/logout}" method="post">
-    <input type="submit" value="Logout">
+    <input type="submit" value="Выйти">
 </form>
 
 </body>

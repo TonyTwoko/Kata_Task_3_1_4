@@ -2,44 +2,52 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Создать пользователя</title>
+  <title>Create User</title>
+  <style>
+    .error { color: red; }
+    .role-container { margin-bottom: 15px; }
+  </style>
 </head>
 <body>
-<h1>Создать нового пользователя</h1>
 
-<form th:action="@{/admin/new}" th:object="${user}" method="post">
+<h1>Создание нового пользователя</h1>
+
+
+<div th:if="${error}" class="error" th:text="${error}"></div>
+
+<form th:action="@{/admin/new}" method="post">
   <div>
     <label>Username:</label>
-    <input type="text" th:field="*{username}"/>
-    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+    <input type="text" name="username" th:value="${user?.username}" required>
   </div>
 
   <div>
     <label>Surname:</label>
-    <input type="text" th:field="*{surname}"/>
-    <span th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></span>
+    <input type="text" name="surname" th:value="${user?.surname}" required>
   </div>
 
   <div>
     <label>Password:</label>
-    <input type="password" th:field="*{password}"/>
-    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+    <input type="password" name="password" required>
   </div>
 
-  <div>
+
+  <div class="role-container" th:classappend="${roleError != null} ? 'error'">
     <label>Roles:</label>
     <div th:each="role : ${allRoles}">
       <input type="checkbox"
              th:value="${role.id}"
-             name="selectedRoles"
-             th:checked="${user.roles != null && user.roles.contains(role)}"/>
+             name="roleIds"
+             th:checked="${user?.roles != null and #lists.contains(user.roles, role)}">
       <label th:text="${role.name}"></label>
     </div>
+
+    <span th:if="${roleError}" class="error" th:text="${roleError}"></span>
   </div>
 
   <div>
     <button type="submit">Создать</button>
-    <a th:href="@{/admin}">Отмена</a>
+    <a th:href="@{/admin}">Отменить</a>
   </div>
 </form>
 

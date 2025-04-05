@@ -2,28 +2,26 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Редактировать пользователя</title>
+  <title>Edit User</title>
 </head>
 <body>
-<h1>Редактировать пользователя</h1>
 
-<form th:action="@{/admin/edit/{id}(id=${user.id})}" th:object="${user}" method="post">
+<h1>Изменить пользователя</h1>
+
+<form th:action="@{/admin/edit/{id}(id=${user.id})}" method="post">
   <div>
     <label>Username:</label>
-    <input type="text" th:field="*{username}"/>
-    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+    <input type="text" name="username" th:value="${user.username}" required>
   </div>
 
   <div>
     <label>Surname:</label>
-    <input type="text" th:field="*{surname}"/>
-    <span th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></span>
+    <input type="text" name="surname" th:value="${user.surname}" required>
   </div>
 
   <div>
     <label>Password:</label>
-    <input type="password" th:field="*{password}" placeholder="Введите старый или новый пароль"/>
-    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+    <input type="password" name="password" placeholder="Пустое без изменений">
   </div>
 
   <div>
@@ -31,15 +29,15 @@
     <div th:each="role : ${allRoles}">
       <input type="checkbox"
              th:value="${role.id}"
-             name="selectedRoles"
-             th:checked="${user.roles != null && user.roles.contains(role)}"/>
+             name="roleIds"
+      th:checked="${#lists.contains(user.roles, role)}">
       <label th:text="${role.name}"></label>
     </div>
   </div>
 
   <div>
     <button type="submit">Обновить</button>
-    <a th:href="@{/admin}">Отмена</a>
+    <a th:href="@{/admin}">Отменить</a>
   </div>
 </form>
 
