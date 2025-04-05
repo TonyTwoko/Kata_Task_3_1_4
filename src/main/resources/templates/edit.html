@@ -2,26 +2,27 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Edit</title>
+  <title>Редактировать</title>
   <style>
-    .error { color: red; font-size: 0.9em; }
+    .error { color: red; }
     .error-field { border: 1px solid red; }
   </style>
 </head>
 <body>
 
-<h1>Изменение пользователя</h1>
+<h1>Редактировать пользователя</h1>
+
+
+<div th:if="${error}" class="error" th:text="${error}"></div>
 
 <form th:action="@{/admin/edit/{id}(id=${user.id})}" th:object="${user}" method="post">
 
   <div>
     <label>Username:</label>
     <input type="text" th:field="*{username}"
-           th:classappend="${#fields.hasErrors('username')} ? 'error-field'">
-    <span th:if="${#fields.hasErrors('username')}"
-          th:errors="*{username}"
-          class="error"></span>
+           th:classappend="${error != null} ? 'error-field'">
   </div>
+
 
   <div>
     <label>Surname:</label>
@@ -35,7 +36,7 @@
   <div>
     <label>Password:</label>
     <input type="password" th:field="*{password}"
-           placeholder="Сохранить без изменений"
+           placeholder="Введите новый пароль"
            th:classappend="${#fields.hasErrors('password')} ? 'error-field'">
     <span th:if="${#fields.hasErrors('password')}"
           th:errors="*{password}"
@@ -55,8 +56,8 @@
   </div>
 
   <div>
-    <button type="submit">Изменить</button>
-    <a th:href="@{/admin}">Отменить</a>
+    <button type="submit">Сохранить</button>
+    <a th:href="@{/admin}">Отмена</a>
   </div>
 </form>
 

@@ -76,12 +76,20 @@ public class AdminController {
                              Model model) {
 
         if (roleIds == null || roleIds.isEmpty()) {
-            model.addAttribute("roleError", "Please select at least one role");
+            model.addAttribute("roleError", "Выберите хотя бы одну роль");
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "edit";
         }
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("allRoles", roleService.getAllRoles());
+            return "edit";
+        }
+
+        User existingUser = userService.getUserById(id);
+        if (!existingUser.getUsername().equals(user.getUsername())
+                && userService.existsByUsername(user.getUsername())) {
+            model.addAttribute("error", "Имя пользователя уже существует");
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "edit";
         }
