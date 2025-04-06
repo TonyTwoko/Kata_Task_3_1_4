@@ -29,8 +29,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean saveUser(User user, Set<Long> roleIds) {
-        if (userRepository.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByEmail(user.getEmail())) {
             return false;
         }
 
@@ -82,13 +82,4 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    private void validateUser(User user, Set<Long> roleIds) {
-        if (user.getUsername() == null || user.getUsername().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be empty");
-        }
-
-        if (roleIds == null || roleIds.isEmpty()) {
-            throw new IllegalArgumentException("User must have at least one role");
-        }
-    }
 }

@@ -4,32 +4,56 @@
   <meta charset="UTF-8">
   <title>Редактировать</title>
   <style>
-    .error { color: red; }
+    .error { color: red; font-size: 0.9em; }
     .error-field { border: 1px solid red; }
+    .role-error { margin-top: 5px; }
   </style>
 </head>
 <body>
 
-<h1>Редактировать пользователя</h1>
-
+<h1>Редактирование пользователя</h1>
 
 <div th:if="${error}" class="error" th:text="${error}"></div>
 
 <form th:action="@{/admin/edit/{id}(id=${user.id})}" th:object="${user}" method="post">
 
+
   <div>
-    <label>Username:</label>
+    <label>First name:</label>
     <input type="text" th:field="*{username}"
-           th:classappend="${error != null} ? 'error-field'">
+           th:classappend="${#fields.hasErrors('username')} ? 'error-field'">
+    <span th:if="${#fields.hasErrors('username')}"
+          th:errors="*{username}"
+          class="error"></span>
   </div>
 
-
   <div>
-    <label>Surname:</label>
+    <label>Last name:</label>
     <input type="text" th:field="*{surname}"
            th:classappend="${#fields.hasErrors('surname')} ? 'error-field'">
     <span th:if="${#fields.hasErrors('surname')}"
           th:errors="*{surname}"
+          class="error"></span>
+  </div>
+
+  <div class="form-group">
+    <label>Age:</label>
+    <input type="number" th:field="*{age}"
+           class="form-control"
+           min="14"
+           required>
+    <span th:if="${#fields.hasErrors('age')}"
+          th:errors="*{age}"
+          class="error"></span>
+  </div>
+
+  <div class="form-group">
+    <label>Email:</label>
+    <input type="email" th:field="*{email}"
+           class="form-control"
+           required>
+    <span th:if="${#fields.hasErrors('email')}"
+          th:errors="*{email}"
           class="error"></span>
   </div>
 
@@ -52,7 +76,7 @@
              th:checked="${#lists.contains(user.roles, role)}">
       <label th:text="${role.name}"></label>
     </div>
-    <span th:if="${roleError}" class="error" th:text="${roleError}"></span>
+    <span th:if="${roleError}" class="error role-error" th:text="${roleError}"></span>
   </div>
 
   <div>

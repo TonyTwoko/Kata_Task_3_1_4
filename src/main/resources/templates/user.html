@@ -6,18 +6,38 @@
 </head>
 <body>
 
-<h1>
-    Добро пожаловать,
-    <span th:text="${user.username} + ' ' + ${user.surname}"></span>
-</h1>
+<h1>Ваш профиль</h1>
 
-<div>
-    <p>Роли:
-        <span th:each="role, iterStat : ${user.roles}"
-              th:text="${role.name} + (${iterStat.last} ? '' : ', ')">
-        </span>
-    </p>
-</div>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Age</th>
+        <th>Email</th>
+        <th>Roles</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.username}"></td>
+        <td th:text="${user.surname}"></td>
+        <td th:text="${user.age}"></td>
+        <td th:text="${user.email}"></td>
+        <td>
+            <span th:each="role, iterStat : ${user.roles}">
+                <span th:text="${role.name}"></span>
+                <span th:unless="${iterStat.last}">, </span>
+            </span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br>
+<br>
 
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Выйти">

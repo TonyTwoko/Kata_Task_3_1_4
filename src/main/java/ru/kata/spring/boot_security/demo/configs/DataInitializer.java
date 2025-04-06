@@ -44,11 +44,13 @@ public class DataInitializer {
     }
 
     private void createAdminIfNotExists(Role adminRole, Role userRole) {
-        String adminUsername = "admin";
-        if (userRepository.findByUsername(adminUsername).isEmpty()) {
+        String adminEmail = "admin@mail.com";
+        if (userRepository.findByEmail(adminEmail).isEmpty()) {
             User admin = new User();
-            admin.setUsername(adminUsername);
+            admin.setUsername("admin");
+            admin.setEmail(adminEmail);
             admin.setSurname("admin");
+            admin.setAge(31);
             admin.setPassword(passwordEncoder.encode("admin"));
             admin.setRoles(Set.of(adminRole, userRole));
             userRepository.save(admin);

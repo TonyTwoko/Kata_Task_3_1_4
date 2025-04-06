@@ -5,26 +5,35 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 
 @Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
+@Table(name = "users",
+        uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Необходимо заполнить")
-    @Size(min = 3, max = 15, message = "Минимум 3, максимум 15")
+    @NotBlank(message = "Обязательное поле")
+    @Size(min = 3, max = 20, message = "Username должен быть от 3 до 20 символов")
     private String username;
 
-    @NotNull(message = "Необходимо заполнить")
+    @NotBlank(message = "Обязательное поле")
+    @Email(message = "Некорректный формат email")
+    @Column(unique = true)
+    private String email;
+
+    @NotNull(message = "Обязательное поле")
+    @Min(value = 14, message = "Минимальный возраст - 14 лет")
+    private Integer age;
+
+    @NotNull(message = "Обязательное поле")
     @Size(min = 2, max = 20, message = "От 2 до 20 символов")
     private String surname;
 
@@ -42,7 +51,6 @@ public class User implements UserDetails {
 
     public User() {
     }
-
 
     public Long getId() {
         return id;
@@ -111,11 +119,29 @@ public class User implements UserDetails {
         return true;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", age=" + age +
                 ", surname='" + surname + '\'' +
                 ", password='" + password + '\'' +
                 ", roles=" + roles +

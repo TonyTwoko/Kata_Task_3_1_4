@@ -42,20 +42,24 @@ public class AdminController {
                              BindingResult bindingResult,
                              @RequestParam(required = false) Set<Long> roleIds,
                              Model model) {
+
         if (roleIds == null || roleIds.isEmpty()) {
-            model.addAttribute("roleError", "Выберете минимум 1 роль");
+            model.addAttribute("roleError", "Выберите минимум 1 роль");
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "new";
         }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "new";
         }
-        if (userService.existsByUsername(user.getUsername())) {
-            model.addAttribute("error", "Имя пользователя уже существует");
+
+        if (userService.existsByEmail(user.getEmail())) {
+            model.addAttribute("error", "Email уже зарегистрирован");
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "new";
         }
+
         userService.saveUser(user, roleIds);
         return "redirect:/admin";
     }
@@ -85,11 +89,11 @@ public class AdminController {
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "edit";
         }
-
         User existingUser = userService.getUserById(id);
-        if (!existingUser.getUsername().equals(user.getUsername())
-                && userService.existsByUsername(user.getUsername())) {
-            model.addAttribute("error", "Имя пользователя уже существует");
+
+        if (!existingUser.getEmail().equals(user.getEmail())
+                && userService.existsByEmail(user.getEmail())) {
+            model.addAttribute("error", "Email уже зарегистрирован");
             model.addAttribute("allRoles", roleService.getAllRoles());
             return "edit";
         }

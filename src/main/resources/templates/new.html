@@ -17,8 +17,9 @@
 
 <form th:action="@{/admin/new}" th:object="${user}" method="post">
 
+
   <div>
-    <label>Username:</label>
+    <label>First name:</label>
     <input type="text" th:field="*{username}"
            th:classappend="${#fields.hasErrors('username')} ? 'error-field'">
     <span th:if="${#fields.hasErrors('username')}"
@@ -27,12 +28,33 @@
   </div>
 
   <div>
-    <label>Surname:</label>
+    <label>Last name:</label>
     <input type="text" th:field="*{surname}"
            th:classappend="${#fields.hasErrors('surname')} ? 'error-field'">
     <span th:if="${#fields.hasErrors('surname')}"
           th:errors="*{surname}"
           class="error"></span>
+  </div>
+
+  <div class="form-group">
+    <label>Age:</label>
+    <input type="number" th:field="*{age}"
+           class="form-control"
+           min="14"
+           required>
+    <span th:if="${#fields.hasErrors('age')}"
+          th:errors="*{age}"
+          class="text-danger"></span>
+  </div>
+
+  <div class="form-group">
+    <label>Email:</label>
+    <input type="email" th:field="*{email}"
+           class="form-control"
+           required>
+    <span th:if="${#fields.hasErrors('email')}"
+          th:errors="*{email}"
+          class="text-danger"></span>
   </div>
 
   <div>
