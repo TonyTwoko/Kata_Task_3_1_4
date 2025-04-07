@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserService {
+
+    User findByUsername(String username);
     boolean existsByEmail(String email);
     List<User> getAllUsers();
     User getUserById(Long id);

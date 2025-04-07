@@ -9,6 +9,7 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.Set;
 
 @Controller
@@ -24,9 +25,13 @@ public class AdminController {
     }
 
     @GetMapping
-    public String adminPanel(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("allRoles", roleService.getAllRoles());
+    public String adminPanel(Model model, Principal principal) {
+        User currentUser = userService.findByUsername(principal.getName());
+
+        model.addAttribute("user", currentUser); // текущий пользователь
+        model.addAttribute("users", userService.getAllUsers()); // все пользователи
+        model.addAttribute("allRoles", roleService.getAllRoles()); // все роли
+
         return "admin";
     }
 
@@ -43,20 +48,26 @@ public class AdminController {
                              @RequestParam(required = false) Set<Long> roleIds,
                              Model model) {
 
+        // Проверка ролей
         if (roleIds == null || roleIds.isEmpty()) {
-            model.addAttribute("roleError", "Выберите минимум 1 роль");
+            model.addAttribute("user", user); // сохраняем введенные данные
             model.addAttribute("allRoles", roleService.getAllRoles());
+            model.addAttribute("roleError", "Выберите минимум 1 роль");
             return "new";
         }
 
+        // Обработка ошибок валидации
         if (bindingResult.hasErrors()) {
             model.addAttribute("allRoles", roleService.getAllRoles());
+            model.addAttribute("user", user); // сохраняем введенные данные
             return "new";
         }
 
+        // Проверка существующего email
         if (userService.existsByEmail(user.getEmail())) {
-            model.addAttribute("error", "Email уже зарегистрирован");
+            model.addAttribute("user", user); // сохраняем введенные данные
             model.addAttribute("allRoles", roleService.getAllRoles());
+            model.addAttribute("error", "Email уже зарегистрирован");
             return "new";
         }
 
