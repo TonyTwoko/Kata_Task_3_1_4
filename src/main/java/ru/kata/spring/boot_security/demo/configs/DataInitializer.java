@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.configs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.RoleRepository;
@@ -27,10 +28,10 @@ public class DataInitializer {
     }
 
     @PostConstruct
+    @Transactional
     public void init() {
         Role adminRole = findOrCreateRole("ROLE_ADMIN");
         Role userRole = findOrCreateRole("ROLE_USER");
-
         createAdminIfNotExists(adminRole, userRole);
     }
 
@@ -43,7 +44,8 @@ public class DataInitializer {
         return role;
     }
 
-    private void createAdminIfNotExists(Role adminRole, Role userRole) {
+    @Transactional
+    public void createAdminIfNotExists(Role adminRole, Role userRole) {
         String adminEmail = "admin@mail.com";
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
             User admin = new User();
