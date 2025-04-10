@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -26,7 +27,6 @@ public class User implements UserDetails {
 
     @NotBlank(message = "Обязательное поле")
     @Email(message = "Некорректный формат email")
-    @Column(unique = true)
     private String email;
 
     @NotNull(message = "Обязательное поле")
@@ -47,6 +47,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
 
     public User() {
